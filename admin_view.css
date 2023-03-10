@@ -26,6 +26,14 @@
 .button-container {
     position: absolute;
     bottom: 0;
-    left: 0;    
-  }
+    left: 0;
+}
 
+.table-view {
+    margin: 10px;
+    max-height: 87vh;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: grey white;
+    border-radius: 8px;
+}
