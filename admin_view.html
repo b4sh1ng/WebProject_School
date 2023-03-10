@@ -16,9 +16,11 @@
             <!--BackUp View hier einfügen-->
             <h1 style="margin: 5px">BackUp Liste</h1>
             <div class="button-container">
-                <button class="btn btn-info" style="margin-left: 1em; margin-bottom: 1em;">BackUp erstellen</button>
-                <button class="btn btn-primary" style="margin-left: 1em; margin-bottom: 1em;">BackUp Vorschau laden</button>
-                <button class="btn btn-warning" style="margin-left: 1em; margin-bottom: 1em;">Log Vorschau laden</button>
+                <form action="admin_action.php">
+                <input type="submit" value="Backup Erstellen" name="btn_bCreate" class="btn btn-info" style="margin-left: 1em; margin-bottom: 1em;"/>
+                <input type="submit" value="Backup Vorschau" name="btn_bView" class="btn btn-primary" style="margin-left: 1em; margin-bottom: 1em;"/>
+                <input type="submit" value="Log laden" name="btn_lView" class="btn btn-warning" style="margin-left: 1em; margin-bottom: 1em;"/>
+            </form>
             </div>
         </div>
         <div class="rightDiv">
