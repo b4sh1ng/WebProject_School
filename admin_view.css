@@ -18,7 +18,7 @@
 .rightDiv {
     background-color: #1E90FF;
     color: #000;
-    height: 98vh;
+    height: 99vh;
     width: 49.5%;
     float: right;
 }
@@ -37,4 +37,3 @@
     scrollbar-color: rgb(143, 198, 243) grey;
     border-radius: 8px;
 }
-

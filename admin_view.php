@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 
 <head>
+    <?php require("../mysql.inc.php");
+    $db_loginId = $db_user;
+    $db_pass = $db_pwd;
+    $db = $db_name;
+    ?>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,12 +32,12 @@
                         </thead>
                         <tbody>
                             <?php
-                            $backupPath = "/home/dotto/backup/";
+                            $backupPath = "../backup/";
                             $dataInPath = scandir($backupPath);
                             $dataInPath = array_reverse($dataInPath);
                             $iter = 1;
                             foreach ($dataInPath as $data) {
-                                if ($data == "." || $data == ".." || $data == "backup.sh") {
+                                if (!preg_match("/\.(sql)$/", $data)) {
                                     continue;
                                 }
                                 echo "<tr id='row " . $iter . "'>
@@ -52,37 +57,49 @@
                     <input type="submit" value="Backup erstellen" name="btn_bErstellen" class="btn btn-success" style="margin-left: 1em; margin-bottom: 1em;" />
                     <input type="submit" value="Backup Vorschau" name="btn_bVorschau" class="btn btn-primary" style="margin-left: 1em; margin-bottom: 1em;" />
                     <input type="submit" value="Log laden" name="btn_logLaden" class="btn btn-warning" style="margin-left: 1em; margin-bottom: 1em;" />
-            </form>
-        </div>
-    </div>
-    <div class="rightDiv">
-        <div style="margin: 5px;">
-            <h2 style="margin-left: 5px;">Vorschau</h2>
-            <div class="scroll-view" style="margin:1em; background-color: grey;">
-                <?php
-                if (isset($_POST['btn_bErstellen'])) {
-                    shell_exec('/bin/bash /home/dotto/backup/backup.sh');
-                    echo '<script>alert("Backup erstellt!");</script>';
-                }
-                if (isset($_POST['btn_bVorschau'])) {
 
-                    foreach ($_POST['auswahl'] as $item) {
-                        if (!empty($item)) {
-                            echo "<h3>Backup vom: " . substr($item, 16, 14) . "</h3><br><br>";
-                            echo file_get_contents("/home/dotto/backup/" . $item);
-                            return;
+                </div>
+        </div>
+        <div class="rightDiv">
+            <div style="margin: 5px;">
+                <h2 style="margin-left: 5px;">Vorschau</h2>
+                <div class="scroll-view" style="margin:1em; background-color: grey;">
+                    <?php
+                    if (isset($_POST['btn_bErstellen'])) {
+                        shell_exec("/bin/bash ../backup/backup.sh $db_loginId $db_pass $db");
+                        echo '<script>alert("Backup erstellt!");</script>';
+                    }
+                    if (isset($_POST['btn_bVorschau'])) {
+
+                        foreach ($_POST['auswahl'] as $item) {
+                            if (!empty($item)) {
+                                echo "<h3>Backup vom: " . substr($item, 16, 14) . "</h3><br><br>";
+                                echo file_get_contents("../backup/" . $item);
+                                $selectedFile = $item;
+                            }
                         }
                     }
+                    if (isset($_POST['btn_logLaden'])) {
+                        echo "<h3>Log: </h3><br><br>";
+                        echo file_get_contents("../log/log.txt");
+                    }
+                    ?>
+                </div>
+                <?php
+                if (isset($_POST['btn_bVorschau'])) {
+                    echo '<div style="position: absolute; bottom: 0;">';
+                    echo '<input type="submit" value="Backup einspielen" name="btn_bEinspielen" class="btn btn-danger" style="margin-left: 1em; margin-bottom: 1em;" />';
+                    echo '</div>';
                 }
-                if (isset($_POST['btn_logLaden'])) {
-                    echo "<h3>Log: </h3><br><br>";
-                    echo file_get_contents("/home/dotto/log/log.txt");
+                if (isset($_POST['btn_bEinspielen'])) {
+                    shell_exec("/bin/bash ../backup/backup.sh $db_loginId $db_pass $selectedFile");
                 }
+
                 ?>
             </div>
         </div>
     </div>
-    </div>
+    </form>
 </body>
 
 </html>
