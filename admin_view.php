@@ -57,6 +57,7 @@
                     <input type="submit" value="Backup erstellen" name="btn_bErstellen" class="btn btn-success" style="margin-left: 1em; margin-bottom: 1em;" />
                     <input type="submit" value="Backup Vorschau" name="btn_bVorschau" class="btn btn-primary" style="margin-left: 1em; margin-bottom: 1em;" />
                     <input type="submit" value="Log laden" name="btn_logLaden" class="btn btn-warning" style="margin-left: 1em; margin-bottom: 1em;" />
+                    <input type="hidden" name="selectedFile" id="selectedFile" value="" />
 
                 </div>
         </div>
@@ -70,12 +71,15 @@
                         echo '<script>alert("Backup erstellt!");</script>';
                     }
                     if (isset($_POST['btn_bVorschau'])) {
-
+                        $selectedFile = '';
                         foreach ($_POST['auswahl'] as $item) {
                             if (!empty($item)) {
                                 echo "<h3>Backup vom: " . substr($item, 16, 14) . "</h3><br><br>";
                                 echo file_get_contents("../backup/" . $item);
                                 $selectedFile = $item;
+                                echo "<script>
+                                      document.getElementById('selectedFile').value = '$selectedFile';
+                                      </script>";
                             }
                         }
                     }
@@ -92,9 +96,9 @@
                     echo '</div>';
                 }
                 if (isset($_POST['btn_bEinspielen'])) {
-                    shell_exec("/bin/bash ../backup/backup.sh $db_loginId $db_pass $selectedFile");
+                    //shell_exec("/bin/bash ../backup/backup.sh $db_loginId $db_pass" . $_POST['selectedFile']);
+                    echo $_POST['selectedFile'];
                 }
-
                 ?>
             </div>
         </div>
