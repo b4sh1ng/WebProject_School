@@ -1,0 +1,39 @@
+.outerDiv {
+    background-color: #197daf;
+    color: #fff;
+    height: 100vh;
+    width: auto;
+    margin: 0px auto;
+    padding: 5px;
+}
+
+.leftDiv {
+    background-color: #1E90FF;
+    color: #000;
+    height: 99vh;
+    width: 49.5%;
+    float: left;
+}
+
+.rightDiv {
+    background-color: #1E90FF;
+    color: #000;
+    height: 99vh;
+    width: 49.5%;
+    float: right;
+}
+
+.button-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.scroll-view {
+    margin: 10px;
+    max-height: 87vh;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(143, 198, 243) grey;
+    border-radius: 8px;
+}
