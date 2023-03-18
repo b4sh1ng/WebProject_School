@@ -2,9 +2,7 @@
 <html lang="de">
 
 <head>
-    <?php
-    require_once('./session_backup.inc.php');
-    require("../mysql.inc.php");
+    <?php require("../mysql.inc.php");
     $db_loginId = $db_user;
     $db_pass = $db_pwd;
     $db = $db_name;
@@ -35,7 +33,7 @@
                         </thead>
                         <tbody>
                             <?php
-                            $backupPath = "../backup";
+                            $backupPath = "../backup/";
                             $dataInPath = scandir($backupPath);
                             $dataInPath = array_reverse($dataInPath);
                             $iter = 1;
@@ -47,7 +45,7 @@
                             <td>$iter</td>
                             <td>$data</td>
                             <td>
-                            <input style=\"margin-left: 25px;\" type=\"checkbox\" name=\"auswahl[]\" value=\"$data\"/>
+                            <input style='margin-left: 25px;' type='checkbox' name=\"auswahl[]\" value=\"$data\"/>
                             </td>
                             </tr>";
                                 $iter = $iter + 1;
@@ -63,9 +61,7 @@
                         style="margin-left: 1em; margin-bottom: 1em;" />
                     <input type="submit" value="Log laden" name="btn_logLaden" class="btn btn-warning"
                         style="margin-left: 1em; margin-bottom: 1em;" />
-                    <input type="submit" value="Ausloggen" name="btn_logout" class="btn btn-warning"
-                        style="margin-left: 1em; margin-bottom: 1em;" />
-                    <input type="hidden" name="selectedFile" id="selectedFile" value="" />
+
                 </div>
         </div>
         <div class="rightDiv">
@@ -74,29 +70,22 @@
                 <div class="scroll-view" style="margin:1em; background-color: grey;">
                     <?php
                     if (isset($_POST['btn_bErstellen'])) {
-                        $log = fopen("../log/backup-usage.txt", "a") or die("Unable to open file!");
-                        $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Backup erstellt von: " .  $_SESSION['redakteur'] . "\r";
-                        fwrite($log, $insert_log);
-                        fclose($log);
                         shell_exec("/bin/bash ../backup/backup.sh $db_loginId $db_pass $db");
-                        echo "<script> location.replace(\"admin_view.php\"); </script>";
+                        echo '<script>alert("Backup erstellt!");</script>';
                     }
                     if (isset($_POST['btn_bVorschau'])) {
-                        $selectedFile = '';
+
                         foreach ($_POST['auswahl'] as $item) {
                             if (!empty($item)) {
                                 echo "<h3>Backup vom: " . substr($item, 16, 14) . "</h3><br><br>";
-                                echo "<pre>" . file_get_contents("../backup/" . $item) . "</pre>";
+                                echo file_get_contents("../backup/" . $item);
                                 $selectedFile = $item;
-                                echo "<script>
-                                      document.getElementById('selectedFile').value = '$selectedFile';
-                                      </script>";
                             }
                         }
                     }
                     if (isset($_POST['btn_logLaden'])) {
                         echo "<h3>Log: </h3><br><br>";
-                        echo "<pre>" . file_get_contents("../log/backup-usage.txt" ) . "</pre>";
+                        echo file_get_contents("../log/log.txt");
                     }
                     ?>
                 </div>
@@ -107,22 +96,12 @@
                     echo '</div>';
                 }
                 if (isset($_POST['btn_bEinspielen'])) {
-                    $log = fopen("../log/backup-usage.txt", "a") or die("Unable to open file!");
-                    $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Backup eingespielt von: "  .  $_SESSION['redakteur'] . "\r";
-                    fwrite($log, $insert_log);
-                    fclose($log);
-                    $file = "../backup/" . $_POST['selectedFile'];
-                    shell_exec("/bin/bash ../backup/writeToDb.sh $db_loginId $db_pass $file");
+                    shell_exec("/bin/bash ../backup/backup.sh $db_loginId $db_pass $selectedFile");
                 }
-                if (isset($_POST['btn_logout'])) {
-                    session_destroy();
-                    echo "<script> location.replace(\"admin_login.php\"); </script>";
-                }
+
                 ?>
             </div>
         </div>
     </div>
     </form>
 </body>
-
-</html>
