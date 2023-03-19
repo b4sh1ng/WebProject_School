@@ -6,8 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="admin_view.css" type="text/css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <title>BackUp | Login</title>
 </head>
 
@@ -17,12 +16,15 @@
             <h1>Login Backupsystem</h1>
             <form action="admin_login.php" method="post">
                 <label>Login ID</label>
-                <input type="text" name="loginId"
-                    value=<?php echo isset($_POST['value']) ? htmlspecialchars($_POST['value']) : null ?>>
+                <input type="text" name="loginId" value=<?php echo isset($_POST['value']) ? htmlspecialchars($_POST['value']) : null ?>>
+                <br>
                 <br>
                 <label>Passwort</label>
-                <input type="password" name="passwd"
-                    value=<?php echo isset($_POST['value']) ? htmlspecialchars($_POST['value']) : null ?>>
+                <input type="password" name="passwd" value=<?php echo isset($_POST['value']) ? htmlspecialchars($_POST['value']) : null ?>>
+                <br>
+                <br>
+                <label>2FA Key</label>
+                <input type="password" name="2fa_key" value=<?php echo isset($_POST['value']) ? htmlspecialchars($_POST['value']) : null ?>>
                 <br>
                 <br>
                 <input type="submit" Name="btn_login" value="Einloggen" />
@@ -44,17 +46,26 @@
                     $userid = $item['loginid'];
                     $password = $item['pwd'];
                     $access_lvl = $item['access_lvl'];
+                    $fakey =  $item['2fa_key'];
                 }
-
+                $current_code_2fa = trim(shell_exec("oathtool --base32 --totp $fakey"));
+                //echo "<pre>".$current_code_2fa. "</pre>";
                 $pwdVerify = password_verify($_POST['passwd'], $password);
-                if ($_POST['loginId'] == $userid && $pwdVerify && $access_lvl >= 10) {
+                if ($_POST['loginId'] == $userid && $pwdVerify && $access_lvl >= 10 && ($fakey == "NULL")) {
                     $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Erfolgreicher Login von: $userid\r";
                     fwrite($log, $insert_log);
                     fclose($log);
                     session_start();
-                    $_SESSION['redakteur'] = $userid;
+                    $_SESSION['data'] = $userid;
                     header("Location: ./admin_view.php");
-                } else {
+                } else if ($_POST['loginId'] == $userid && $pwdVerify && ($access_lvl >= 10) && ($_POST['2fa_key'] == $current_code_2fa)){
+                    $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Erfolgreicher Login von: $userid\r";
+                    fwrite($log, $insert_log);
+                    fclose($log);
+                    session_start();
+                    $_SESSION['data'] = $userid;
+                    header("Location: ./admin_view.php");
+                }else {
                     $insert_log = "[" . date("Y-m-d H:i:s") . "]" . "Nicht erfolgreicher Login von: $userid!\r";
                     fwrite($log, $insert_log);
                     fclose($log);
