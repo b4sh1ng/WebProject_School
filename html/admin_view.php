@@ -27,13 +27,14 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Log Datum</th>
+                                <th>Backup</th>
+                                <th>Size</th>
                                 <th>Auswahl</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            $backupPath = "../backup";
+                            $backupPath = "../backup/";
                             $dataInPath = scandir($backupPath);
                             $dataInPath = array_reverse($dataInPath);
                             $iter = 1;
@@ -41,9 +42,11 @@
                                 if (!preg_match("/\.(sql)$/", $data)) {
                                     continue;
                                 }
+                                $size = filesize($backupPath . $data);
                                 echo "<tr id='row " . $iter . "'>
                             <td>$iter</td>
                             <td>$data</td>
+                            <td>$size Bytes</td>
                             <td>
                             <input style=\"margin-left: 25px;\" type=\"checkbox\" name=\"auswahl[]\" value=\"$data\"/>
                             </td>
