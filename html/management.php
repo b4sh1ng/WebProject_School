@@ -8,7 +8,7 @@
     $db_loginId = $db_user;
     $db_pass = $db_pwd;
     $db = $db_name;
-    session_start();
+    //session_start();
     ?>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,13 +22,13 @@
 <body style="background: #242424" ;>
     <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">DB-Management</a>
+            <a class="navbar-brand" href="">DB-Management</a>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/settings.php">Einstellungen</a>
+                    <a class="nav-link" href="settings.php">Einstellungen</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/logout.php">Logout</a>
+                    <a class="nav-link" href="logout.php">Logout</a>
                 </li>
             </ul>
         </div>
@@ -77,7 +77,7 @@
                             <td>$data</td>
                             <td>$size Bytes</td>
                             <td>
-                            <input style=\"margin-left: 25px;\" type=\"checkbox\" name=\"auswahl[]\" value=\"$data\"/>
+                            <input style=\"margin-left: 25px;\" type=\"radio\" name=\"auswahl[]\" value=\"$data\"/>
                             </td>
                             </tr>";
                                             $iter = $iter + 1;
@@ -91,49 +91,54 @@
                     </div>
             </div>
             <div class="col">
-                <div class="container" style="background: #2d2d2d; margin-top: 1.5%; height: 90vh; width: 75vh;">
-                    <div style="height: 80vh; overflow: scroll; scrollbar-width: thin;">
-                        <?php
-                        if (isset($_POST['btn_bErstellen'])) {
-                            $log = fopen("../log/backup-usage.txt", "a") or die("Unable to open file!");
-                            $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Backup erstellt von: " .  $_SESSION['data'] . "\r";
-                            fwrite($log, $insert_log);
-                            fclose($log);
-                            shell_exec("/bin/bash ../backup/backup.sh $db_loginId $db_pass $db");
-                            echo "<script> location.replace(\"management.php\"); </script>";
-                        }
-                        if (isset($_POST['btn_bVorschau'])) {
-                            $selectedFile = '';
-                            foreach ($_POST['auswahl'] as $item) {
-                                if (!empty($item)) {
-                                    echo "<h3 style=\"margin-top: 1em;\">Backup vom: " . substr($item, 16, 14) . "</h3><br><br>";
-                                    echo "<pre>" . file_get_contents("../backup/" . $item) . "</pre>";
-                                    $selectedFile = $item;
-                                    echo "<script>
+                <div class="container" style="background: #2d2d2d; margin-top: 1.6%; height: 90vh; width: 70vh;">
+
+                    <?php
+                    if (isset($_POST['btn_bErstellen'])) {
+                        $log = fopen("../log/backup-usage.txt", "a") or die("Unable to open file!");
+                        $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Backup erstellt von: " .  $_SESSION['data'] . "\r";
+                        fwrite($log, $insert_log);
+                        fclose($log);
+                        shell_exec("/bin/bash ../backup/backup.sh $db_loginId $db_pass $db");
+                        echo "<script> location.replace(\"management.php\"); </script>";
+                    }
+                    if (isset($_POST['btn_bVorschau']) && isset($_POST['auswahl'])) {
+                        echo '<div style="height: 80vh; overflow: auto; scrollbar-width: thin;">';
+                        $selectedFile = '';
+                        foreach ($_POST['auswahl'] as $item) {
+                            if (!empty($item)) {
+                                echo "<h3 style=\"margin-top: 1em;\">Backup vom: " . substr($item, 16, 14) . "</h3><br><br>";
+                                echo "<pre>" . file_get_contents("../backup/" . $item) . "</pre>";
+                                $selectedFile = $item;
+                                echo "<script>
                                       document.getElementById('selectedFile').value = '$selectedFile';
                                       </script>";
-                                }
                             }
-                            if ($selectedFile != '') {
-                                echo '<div>';
-                                echo '<input type="submit" value="Backup einspielen" name="btn_bEinspielen" class="btn btn-danger"/>';
-                                echo '</div>';
-                            }
+                            echo '</div>';
+                            break;
                         }
-                        if (isset($_POST['btn_logLaden'])) {
-                            echo "<h3 style=\"margin-top: 1em;\">Log: </h3><br><br>";
-                            echo "<pre>" . file_get_contents("../log/backup-usage.txt") . "</pre>";
+                        if ($selectedFile != '') {
+                            echo '<div>';
+                            echo '<input type="submit" value="Backup einspielen" name="btn_bEinspielen" class="btn btn-danger"/>';
+                            echo '</div>';
                         }
-                        if (isset($_POST['btn_bEinspielen'])) {
-                            $log = fopen("../log/backup-usage.txt", "a") or die("Unable to open file!");
-                            $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Backup eingespielt von: "  .  $_SESSION['data'] . "\r";
-                            fwrite($log, $insert_log);
-                            fclose($log);
-                            $file = "../backup/" . $_POST['selectedFile'];
-                            shell_exec("/bin/bash ../backup/writeToDb.sh $db_loginId $db_pass $file");
-                        }
-                        ?>
-                    </div>
+                    }
+                    if (isset($_POST['btn_logLaden'])) {
+                        echo '<div style="height: 80vh; overflow: auto; scrollbar-width: thin;">';
+                        echo "<h3 style=\"margin-top: 0em;\">Log: </h3><br><br>";
+                        echo "<pre>" . file_get_contents("../log/backup-usage.txt") . "</pre>";
+                        echo '</div>';
+                    }
+                    if (isset($_POST['btn_bEinspielen'])) {
+                        $log = fopen("../log/backup-usage.txt", "a") or die("Unable to open file!");
+                        $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Backup eingespielt von: "  .  $_SESSION['data'] . "\r";
+                        fwrite($log, $insert_log);
+                        fclose($log);
+                        $file = "../backup/" . $_POST['selectedFile'];
+                        shell_exec("/bin/bash ../backup/writeToDb.sh $db_loginId $db_pass $file");
+                    }
+                    ?>
+
                 </div>
             </div>
         </div>

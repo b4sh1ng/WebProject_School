@@ -21,10 +21,10 @@ while ($item = $stmt->fetch()) {
 $_SESSION['loginid'] = $userid;
 $_SESSION['key'] = $fakey;
 $pwdVerify = password_verify($_POST['passwd'], $password);
-if (!($fakey == "NULL") && $_POST['login'] == $userid && $pwdVerify && $access_lvl >= 10) {
+if (!($fakey == NULL) && $_POST['login'] == $userid && $pwdVerify && $access_lvl >= 10) {
     fclose($log);
     header("Location: 2fa_check.php");
-} else if ($_POST['login'] == $userid && $pwdVerify && $access_lvl >= 10 && ($fakey == "NULL")) {
+} else if ($_POST['login'] == $userid && $pwdVerify && $access_lvl >= 10 && ($fakey == NULL)) {
     $insert_log = "[" . date('Y-m-d H:i:s') . "]" . "Erfolgreicher Login von: $userid\r";
     fwrite($log, $insert_log);
     fclose($log);
