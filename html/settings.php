@@ -38,9 +38,9 @@
             <br>
             <form action="settings.php" method="post">
                 <?php
-                session_start();
+                //session_start();
                 $fakey = $_SESSION['key'];
-                if (!($fakey == "NULL")) {
+                if (!($fakey == NULL)) {
                     echo '<button type="submit" class="btn btn-danger" name="btn_no_2fa">2FA Deaktivieren</button>';
                 } else {
                     echo '<button type="submit" class="btn btn-success" name="btn_2fa">2FA Aktivieren</button>';
@@ -53,7 +53,7 @@
                 }
                 if (isset($_POST['btn_no_2fa'])) {
                     $user = $_SESSION['data'];
-                    $_SESSION['key'] = "NULL";
+                    $_SESSION['key'] = NULL;
                     shell_exec("/bin/bash ../2fakey/deactivate_2fa.sh $user $db_loginId $db_pass $db");
                     echo "<script> location.replace(\"settings.php\"); </script>";
                 }
